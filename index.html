@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Onboarding Wizard - OTP Verification</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        .otp-verification-page {
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .otp-box {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .modal-header h3 span {
+            color: #007BFF;
+        }
+        .otp-info {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .countdown {
+            font-weight: bold;
+        }
+        .lets-go-btn {
+            width: 100%;
+        }
+        .loading-screen {
+            background-color: rgba(0, 0, 0, 0.5);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        .loading-screen .loading-content {
+            text-align: center;
+        }
+
+        /* Step 1 styles (theme selection) */
+        .theme-box {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: none; /* Hide this initially */
+        }
+
+        .theme-heading {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .theme-selection {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .theme {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            width: 220px;
+            cursor: pointer;
+        }
+
+        .theme img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .select-theme {
+            margin-top: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .select-theme:hover {
+            background-color: #0056b3;
+        }
+
+        .next-btn {
+            display: block;
+            margin: 30px auto 0;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .next-btn:hover {
+            background-color: #218838;
+        }
+
+        .selected-theme {
+            border: 2px solid #007BFF;
+        }
+    </style>
+</head>
+<body class="otp-verification-page">
+    <div class="overlay"></div>
+    <div class="otp-box">
+        <div class="container">
+            <div class="modal-container">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Create <span>Store</span></h3>
+                        <button type="button" class="btn-close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="otp-info alert alert-info">
+                            We have sent an OTP to your mobile number. Please enter the same to proceed.
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="otp-input">OTP</label>
+                            <input type="text" id="otp-input" class="form-control otp-input" maxlength="6">
+                        </div>
+                        <div class="d-flex justify-content-between mb-4">
+                            <div class="resend-info">
+                                <span>Resend OTP in </span>
+                                <span class="countdown">02:30</span>
+                            </div>
+                            <div>
+                                <a href="#" class="edit-link">Edit mobile</a>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button class="btn btn-primary lets-go-btn" onclick="validateOTP()">LETS GO</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen d-none">
+        <div class="loading-content text-center">
+            <h4>Create <strong>Store</strong></h4>
+            <img src="https://cdn1.link-assistant.com/upload/news/posts/282/screen-01.gif" alt="Creating Store Animation" class="img-fluid creating-store-animation" />
+            <p class="text-white mt-3 creating-store-text">Creating your store...</p>
+            <img src="https://cdn1.link-assistant.com/upload/news/posts/282/screen-01.gif" alt="Please Wait Animation" class="img-fluid waiting-store-animation d-none" />
+            <p class="text-white mt-3 waiting-store-text d-none">Please wait while we are creating your store...</p>
+        </div>
+    </div>
+
+    <!-- Step 1: Theme Selection (Hidden initially) -->
+    <div class="theme-box" id="themeBox">
+        <h2 class="theme-heading">Let's Customize Your Shopnix Store</h2>
+        <h2 style="color: #007BFF;">Apply a theme</h2>
+        <div class="theme-selection">
+            <div class="theme" onclick="selectTheme(this)">
+                <img src="https://tse4.mm.bing.net/th?id=OIP.t_rOZQ7xcaq2KkMTv9K6nwHaHa&pid=Api&P=0&h=180" alt="bag-theme">
+                <h3>Bags Theme</h3>
+                <button class="select-theme">Choose</button>
+            </div>
+            <div class="theme" onclick="selectTheme(this)">
+                <img src="https://tse4.mm.bing.net/th?id=OIP.7JQXDkmy8VrwfbQEpcMYJgHaJP&pid=Api&P=0&h=180" alt="flex-theme">
+                <h3>Flex Theme</h3>
+                <button class="select-theme">Choose</button>
+            </div>
+            <div class="theme" onclick="selectTheme(this)">
+                <img src="https://tse1.mm.bing.net/th?id=OIP.TEkRB9E7jm6nseYjZgb1vQHaJQ&pid=Api&P=0&h=180" alt="chic-theme">
+                <h3>Chic Theme</h3>
+                <button class="select-theme">Choose</button>
+            </div>
+        </div>
+        <button class="next-btn" onclick="goToStep2()">Next</button>
+    </div>
+    <div class="product-info-box" id="productInfoBox" style="display: none;">
+        <h2 class="text-center">Add Product Information</h2>
+        <div class="container mt-4">
+            <div class="mb-3">
+                <label for="productImage" class="form-label">Product Image</label>
+                <input class="form-control" type="file" id="productImage">
+            </div>
+            <div class="mb-3">
+                <label for="productName" class="form-label">Product Name</label>
+                <input type="text" class="form-control" id="productName" placeholder="Enter product name">
+            </div>
+            <div class="mb-3">
+                <label for="productDesc" class="form-label">Description</label>
+                <textarea class="form-control" id="productDesc" rows="3" placeholder="Enter description"></textarea>
+            </div>
+            <button class="btn btn-success">Save Product</button>
+        </div>
+    </div>
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/script.js"></script>
+   
+    <script>
+        // Countdown timer for OTP resend
+        let countdownTime = 150; // 2 minutes 30 seconds in seconds
+        const countdownElement = document.querySelector('.countdown');
+        
+        const countdownInterval = setInterval(() => {
+            let minutes = Math.floor(countdownTime / 60);
+            let seconds = countdownTime % 60;
+            countdownElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            countdownTime--;
+
+            if (countdownTime < 0) {
+                clearInterval(countdownInterval);
+                countdownElement.textContent = '00:00';
+            }
+        }, 1000);
+
+        // OTP validation function
+        function validateOTP() {
+            const otpInput = document.getElementById('otp-input').value;
+            const otpPattern = /^\d{6}$/; // 6 digits
+
+            if (!otpPattern.test(otpInput)) {
+                alert("Please enter a valid 6-digit OTP.");
+                return;
+            }
+
+            // Show loading screen and proceed
+            document.getElementById('loading-screen').classList.remove('d-none');
+            
+            // Simulate store creation delay (for demonstration)
+            setTimeout(() => {
+                document.querySelector('.otp-box').style.display = 'none'; // Hide OTP verification
+                document.getElementById('themeBox').style.display = 'block'; // Show theme selection
+            }, 3000); // 3 seconds delay
+        }
+
+        // Select a theme
+        function selectTheme(element) {
+            // Remove previously selected theme
+            const themes = document.querySelectorAll('.theme');
+            themes.forEach(theme => theme.classList.remove('selected-theme'));
+            
+            // Add selected class to the clicked theme
+            element.classList.add('selected-theme');
+        }
+
+        // Proceed to next step
+        function goToStep2() {
+    const selectedTheme = document.querySelector('.theme.selected-theme');
+    if (!selectedTheme) {
+        alert('Please choose a theme before proceeding.');
+        return;
+    }
+
+    // Hide theme selection and show product info section
+    document.getElementById('themeBox').style.display = 'none';
+    document.getElementById('productInfoBox').style.display = 'block';
+}
+    </script>
+</body>
+</html>
