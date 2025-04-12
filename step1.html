@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <style>
+    body {
+      background-color: #f9f9f9;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+
+    .text-center h4 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .theme-box {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      margin-top: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .theme-heading {
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .theme-selection {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin-top: 20px;
+    }
+
+    .theme {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      width: 220px;
+      transition: transform 0.3s;
+      background: #fefefe;
+    }
+
+    .theme:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+
+    .theme img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .select-theme {
+      margin-top: 10px;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .select-theme:hover {
+      background-color: #0056b3;
+    }
+
+    .next-btn {
+      display: block;
+      margin: 30px auto 0;
+      background-color: #28a745;
+      color: white;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .next-btn:hover {
+      background-color: #218838;
+    }
+
+    .selected-theme {
+      border: 2px solid #007BFF;
+    }
+
+    .step {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .step.show {
+      display: block;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🌟 Add your theme selection section here -->
+  <div class="theme-box" id="themeBox">
+    <h2 class="theme-heading">Let's Customize Your Shopnix Store</h2>
+    <h2 style="color: #007BFF;">Apply a theme</h2>
+    <div class="theme-selection">
+      <div class="theme" onclick="selectTheme(this)">
+        <img src="https://tse4.mm.bing.net/th?id=OIP.t_rOZQ7xcaq2KkMTv9K6nwHaHa&pid=Api&P=0&h=180" alt="bag-theme">
+        <h3>Bags Theme</h3>
+        <button class="select-theme">Choose</button>
+      </div>
+      <div class="theme" onclick="selectTheme(this)">
+        <img src="https://tse4.mm.bing.net/th?id=OIP.7JQXDkmy8VrwfbQEpcMYJgHaJP&pid=Api&P=0&h=180" alt="flex-theme">
+        <h3>Flex Theme</h3>
+        <button class="select-theme">Choose</button>
+      </div>
+      <div class="theme" onclick="selectTheme(this)">
+        <img src="https://tse1.mm.bing.net/th?id=OIP.TEkRB9E7jm6nseYjZgb1vQHaJQ&pid=Api&P=0&h=180" alt="chic-theme">
+        <h3>Chic Theme</h3>
+        <button class="select-theme">Choose</button>
+      </div>
+    </div>
+    <button class="next-btn" onclick="goToStep2()">Next</button>
+  </div>
+
+  <div class="step" id="step2">
+    <div class="card p-4">
+      <h4 class="mb-4">Add Product Information</h4>
+
+      <div class="mb-3">
+        <label for="productType" class="form-label">Add a Product Type</label>
+        <input type="text" class="form-control" id="productType" placeholder="e.g., Shoes, Bags, etc.">
+      </div>
+
+      <div class="mb-3">
+        <label for="category" class="form-label">Add a Category <small>(Optional)</small></label>
+        <input type="text" class="form-control" id="category" placeholder="e.g., Men's Fashion">
+      </div>
+
+      <div class="mb-3">
+        <label for="subCategory" class="form-label">Add a Sub-Category <small>(Optional)</small></label>
+        <input type="text" class="form-control" id="subCategory" placeholder="e.g., Sneakers">
+      </div>
+
+      <div class="text-center mt-4">
+        <img src="assets/images/Screenshot 2025-04-12 121124.png" alt="Product Setup" class="img-fluid rounded shadow" style="max-width: 400px;">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Function to handle theme selection
+    function selectTheme(selectedTheme) {
+      // Remove 'selected' class from all themes
+      document.querySelectorAll('.theme').forEach(theme => theme.classList.remove('selected-theme'));
+
+      // Add 'selected' class to the clicked theme
+      selectedTheme.classList.add('selected-theme');
+    }
+
+    // Function to go to step 2
+    function goToStep2() {
+      const selectedTheme = document.querySelector('.selected-theme');
+
+      if (!selectedTheme) {
+        alert("Please select a theme first!");
+        return;
+      }
+
+      // Hide the theme selection box and show step 2 with animation
+      document.getElementById('themeBox').style.opacity = 0;
+      setTimeout(() => {
+        document.getElementById('themeBox').style.display = 'none';
+        document.getElementById('step2').classList.add('show');
+      }, 300);
+    }
+  </script>
+
+</body>
+</html>
